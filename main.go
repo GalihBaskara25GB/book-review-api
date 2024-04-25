@@ -76,9 +76,9 @@ func main() {
 
 	router.GET("/reviews", controllers.GetReviews)
 	router.GET("/reviews/:id", controllers.GetReview)
-	router.POST("/reviews", middleware.Auth([]string{"superuser", "review"}), controllers.InsertReview)
-	router.PUT("/reviews/:id", middleware.Auth([]string{"superuser", "review"}), controllers.UpdateReview)
-	router.DELETE("/reviews/:id", middleware.Auth([]string{"superuser", "review"}), controllers.DeleteReview)
+	router.POST("/reviews", middleware.Auth([]string{"superuser", "reviewer"}), controllers.InsertReview)
+	router.PUT("/reviews/:id", middleware.Auth([]string{"superuser", "reviewer"}), controllers.UpdateReview)
+	router.DELETE("/reviews/:id", middleware.Auth([]string{"superuser", "reviewer"}), controllers.DeleteReview)
 
 	if hostingProvider == "railway" {
 		appHost = "0.0.0.0"

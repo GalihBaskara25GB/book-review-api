@@ -69,11 +69,12 @@ func InsertUser(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"result": "Opps something went wrong",
+			"err":    err,
 		})
 		panic(err)
 	}
 
-	requestValirationError := validateUserRequest(&user)
+	requestValirationError := validateUserRequest(&user, "POST")
 	if requestValirationError != nil || len(requestValirationError) != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"result": requestValirationError,
@@ -113,7 +114,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	requestValirationError := validateUserRequest(&user)
+	requestValirationError := validateUserRequest(&user, "PUT")
 	if requestValirationError != nil || len(requestValirationError) != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"result": requestValirationError,
@@ -165,18 +166,19 @@ func DeleteUser(c *gin.Context) {
 	}
 }
 
-func validateUserRequest(user *structs.User) (errs []string) {
+func validateUserRequest(user *structs.User, method string) (errs []string) {
+	if method == "POST" {
+		if user.Username == "" {
+			errs = append(errs, "Username cannot be empty")
+		} else {
+			userRowData, err := repository.GetUserByUsername(database.DbConnection, user.Username)
+			if err != nil {
+				errs = append(errs, err.Error())
+			}
 
-	if user.Username == "" {
-		errs = append(errs, "Username cannot be empty")
-	} else {
-		categoryRowData, err := repository.GetUserByUsername(database.DbConnection, user.Username)
-		if err != nil {
-			errs = append(errs, err.Error())
-		}
-
-		if len(categoryRowData) >= 0 {
-			errs = append(errs, "Username already taken, please choose other username")
+			if len(userRowData) > 0 {
+				errs = append(errs, "Username already taken, please choose other username")
+			}
 		}
 	}
 
@@ -184,7 +186,7 @@ func validateUserRequest(user *structs.User) (errs []string) {
 		errs = append(errs, "Role cannot be empty")
 	} else {
 		if user.Role != "superuser" && user.Role != "author" && user.Role != "reviewer" {
-			errs = append(errs, "Invalid user role")
+			errs = append(errs, "Invalid user role, user role must be either 'superuser', 'reviewer' or 'author'")
 		}
 	}
 

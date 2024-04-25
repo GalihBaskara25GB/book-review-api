@@ -25,7 +25,7 @@ func Auth(allowedRole []string) gin.HandlerFunc {
 			user.Username = username
 			user.Password = password
 
-			userRowData, err := repository.GetUser(database.DbConnection, user)
+			userRowData, err := repository.AuthenticateUser(database.DbConnection, user)
 
 			if err != nil {
 				resultString = err.Error()

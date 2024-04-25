@@ -21,13 +21,14 @@ func GetReviews(db *sql.DB) (results []structs.ReviewWithUserWithBookWithCategor
 					b.category_id AS category_id,
 					c.name AS category_name
 					FROM ` + tableReview + ` AS r 
-					INNER JOIN ` + tableUser + `AS u on u.id = r.user_id 
+					INNER JOIN ` + tableUser + ` AS u on u.id = r.user_id 
 					INNER JOIN ` + tableBook + ` AS b on b.id = r.book_id 
 					INNER JOIN ` + tableCategory + ` AS c on c.id = b.category_id `
 
 	rows, err := db.Query(sql)
 
 	if err != nil {
+		panic(err)
 		defer rows.Close()
 	}
 
@@ -60,7 +61,7 @@ func GetReview(db *sql.DB, review structs.Review) (results []structs.ReviewWithU
 					b.category_id AS category_id,
 					c.name AS category_name
 					FROM ` + tableReview + ` AS r 
-					INNER JOIN ` + tableUser + `AS u on u.id = r.user_id 
+					INNER JOIN ` + tableUser + ` AS u on u.id = r.user_id 
 					INNER JOIN ` + tableBook + ` AS b on b.id = r.book_id 
 					INNER JOIN ` + tableCategory + ` AS c on c.id = b.category_id 
 					WHERE r.id = $1`
