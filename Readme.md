@@ -65,7 +65,8 @@ cp .env.example .env
 ```json
 {
   "username" : "cella",
-  "password": "12345"
+  "password": "12345",
+  "role": "reviewer"
 }
 ```
 
@@ -89,5 +90,26 @@ cp .env.example .env
 }
 ```
 
+## Role Based Access
+
+#### Public routes
+* `/books` : `GET`
+* `/categories` : `GET`
+* `/users` : `GET`
+* `/reviews` : `GET`
+
+#### user with role `superadmin`
+* `/books` : `POST` , `PUT` and `Delete`
+* `/categories` : `POST` , `PUT` and `Delete`
+* `/users` : `POST` , `PUT` and `Delete`
+* `/reviews` : `POST` , `PUT` and `Delete`
+
+#### user with role `author`
+* `/books` : `POST` , `PUT` and `Delete`
+* `/users` : `POST` , `PUT` and `Delete`
+
+#### user with role `reviewer`
+* `/users` : `POST` , `PUT` and `Delete`
+* `/reviews` : `POST` , `PUT` and `Delete`
 
  
