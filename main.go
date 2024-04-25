@@ -58,27 +58,27 @@ func main() {
 
 	router.GET("/books", controllers.GetBooks)
 	router.GET("/books/:id", controllers.GetBook)
-	router.POST("/books", middleware.Auth(), controllers.InsertBook)
-	router.PUT("/books/:id", middleware.Auth(), controllers.UpdateBook)
-	router.DELETE("/books/:id", middleware.Auth(), controllers.DeleteBook)
+	router.POST("/books", middleware.Auth([]string{"superuser", "author"}), controllers.InsertBook)
+	router.PUT("/books/:id", middleware.Auth([]string{"superuser", "author"}), controllers.UpdateBook)
+	router.DELETE("/books/:id", middleware.Auth([]string{"superuser", "author"}), controllers.DeleteBook)
 
 	router.GET("/categories", controllers.GetCategories)
 	router.GET("/categories/:id", controllers.GetCategory)
-	router.POST("/categories", middleware.Auth(), controllers.InsertCategory)
-	router.PUT("/categories/:id", middleware.Auth(), controllers.UpdateCategory)
-	router.DELETE("/categories/:id", middleware.Auth(), controllers.DeleteCategory)
+	router.POST("/categories", middleware.Auth([]string{"superuser"}), controllers.InsertCategory)
+	router.PUT("/categories/:id", middleware.Auth([]string{"superuser"}), controllers.UpdateCategory)
+	router.DELETE("/categories/:id", middleware.Auth([]string{"superuser"}), controllers.DeleteCategory)
 
 	router.GET("/users", controllers.GetUsers)
 	router.GET("/users/:id", controllers.GetUser)
-	router.POST("/users", middleware.Auth(), controllers.InsertUser)
-	router.PUT("/users/:id", middleware.Auth(), controllers.UpdateUser)
-	router.DELETE("/users/:id", middleware.Auth(), controllers.DeleteUser)
+	router.POST("/users", controllers.InsertUser)
+	router.PUT("/users/:id", middleware.Auth([]string{}), controllers.UpdateUser)
+	router.DELETE("/users/:id", middleware.Auth([]string{}), controllers.DeleteUser)
 
 	router.GET("/reviews", controllers.GetReviews)
 	router.GET("/reviews/:id", controllers.GetReview)
-	router.POST("/reviews", middleware.Auth(), controllers.InsertReview)
-	router.PUT("/reviews/:id", middleware.Auth(), controllers.UpdateReview)
-	router.DELETE("/reviews/:id", middleware.Auth(), controllers.DeleteReview)
+	router.POST("/reviews", middleware.Auth([]string{"superuser", "review"}), controllers.InsertReview)
+	router.PUT("/reviews/:id", middleware.Auth([]string{"superuser", "review"}), controllers.UpdateReview)
+	router.DELETE("/reviews/:id", middleware.Auth([]string{"superuser", "review"}), controllers.DeleteReview)
 
 	if hostingProvider == "railway" {
 		appHost = "0.0.0.0"

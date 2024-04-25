@@ -29,7 +29,7 @@ func GetUsers(db *sql.DB) (results []structs.User, err error) {
 }
 
 func GetUser(db *sql.DB, user structs.User) (results []structs.User, err error) {
-	sql := "SELECT * FROM " + tableUser + " WHERE id = $1"
+	sql := "SELECT username, role, created_at, updated_at FROM " + tableUser + " WHERE id = $1"
 
 	rows, err := db.Query(sql, user.Id)
 
@@ -39,7 +39,8 @@ func GetUser(db *sql.DB, user structs.User) (results []structs.User, err error) 
 
 	for rows.Next() {
 		var user = structs.User{}
-		err = rows.Scan(&user.Id, &user.Username, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+		user.Password = "*******"
+		err = rows.Scan(&user.Id, &user.Username, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			break
 		}
@@ -50,7 +51,7 @@ func GetUser(db *sql.DB, user structs.User) (results []structs.User, err error) 
 }
 
 func GetUserByUsername(db *sql.DB, username string) (results []structs.User, err error) {
-	sql := "SELECT * FROM " + tableUser + " WHERE username = '$1'"
+	sql := "SELECT username, role, created_at, updated_at FROM " + tableUser + " WHERE username = '$1'"
 
 	rows, err := db.Query(sql, username)
 
@@ -60,7 +61,8 @@ func GetUserByUsername(db *sql.DB, username string) (results []structs.User, err
 
 	for rows.Next() {
 		var user = structs.User{}
-		err = rows.Scan(&user.Id, &user.Username, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+		user.Password = "*******"
+		err = rows.Scan(&user.Id, &user.Username, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			break
 		}
@@ -73,7 +75,7 @@ func GetUserByUsername(db *sql.DB, username string) (results []structs.User, err
 func InsertUser(db *sql.DB, user structs.User) (err error) {
 	sql := `
 		INSERT INTO ` + tableUser + ` (username, password, role, created_at, updated_at)
-		VALUES ($1, md5($2), $3, $4, $5, $6, $7, $8, $9, $10)
+		VALUES ($1, md5($2), $3, $4, $5)
 	`
 
 	_, err = db.Exec(sql, user.Username, user.Password, user.Role, user.CreatedAt, user.UpdatedAt)

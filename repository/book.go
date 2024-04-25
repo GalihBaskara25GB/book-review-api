@@ -7,8 +7,8 @@ import (
 
 const tableBook = "books"
 
-func GetBooks(db *sql.DB) (results []structs.Book, err error) {
-	sql := "SELECT * FROM " + tableBook
+func GetBooks(db *sql.DB) (results []structs.BookWithCategory, err error) {
+	sql := "SELECT b.*, c.name AS category_name FROM " + tableBook + " AS b INNER JOIN " + tableCategory + " AS c ON c.id = b.category_id"
 
 	rows, err := db.Query(sql)
 
@@ -17,8 +17,8 @@ func GetBooks(db *sql.DB) (results []structs.Book, err error) {
 	}
 
 	for rows.Next() {
-		var book = structs.Book{}
-		err = rows.Scan(&book.Id, &book.Title, &book.Description, &book.ImageUrl, &book.ReleaseYear, &book.Price, &book.TotalPage, &book.Author, &book.CreatedAt, &book.UpdatedAt, &book.CategoryId)
+		var book = structs.BookWithCategory{}
+		err = rows.Scan(&book.Id, &book.Title, &book.Description, &book.ImageUrl, &book.ReleaseYear, &book.Price, &book.TotalPage, &book.Author, &book.CreatedAt, &book.UpdatedAt, &book.CategoryId, &book.CategoryName)
 		if err != nil {
 			break
 		}
@@ -28,8 +28,8 @@ func GetBooks(db *sql.DB) (results []structs.Book, err error) {
 	return
 }
 
-func GetBook(db *sql.DB, book structs.Book) (results []structs.Book, err error) {
-	sql := "SELECT * FROM " + tableBook + " WHERE id = $1"
+func GetBook(db *sql.DB, book structs.Book) (results []structs.BookWithCategory, err error) {
+	sql := "SELECT b.*, c.name AS category_name FROM " + tableBook + " AS b INNER JOIN " + tableCategory + " AS c ON c.id = b.category_id WHERE b.id = $1"
 
 	rows, err := db.Query(sql, book.Id)
 
@@ -38,8 +38,8 @@ func GetBook(db *sql.DB, book structs.Book) (results []structs.Book, err error) 
 	}
 
 	for rows.Next() {
-		var book = structs.Book{}
-		err = rows.Scan(&book.Id, &book.Title, &book.Description, &book.ImageUrl, &book.ReleaseYear, &book.Price, &book.TotalPage, &book.Author, &book.CreatedAt, &book.UpdatedAt, &book.CategoryId)
+		var book = structs.BookWithCategory{}
+		err = rows.Scan(&book.Id, &book.Title, &book.Description, &book.ImageUrl, &book.ReleaseYear, &book.Price, &book.TotalPage, &book.Author, &book.CreatedAt, &book.UpdatedAt, &book.CategoryId, &book.CategoryName)
 		if err != nil {
 			break
 		}

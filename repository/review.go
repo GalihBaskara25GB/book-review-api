@@ -7,8 +7,23 @@ import (
 
 const tableReview = "reviews"
 
-func GetReviews(db *sql.DB) (results []structs.Review, err error) {
-	sql := "SELECT * FROM " + tableReview
+func GetReviews(db *sql.DB) (results []structs.ReviewWithUserWithBookWithCategory, err error) {
+	sql := `SELECT 
+					r.*, 
+					u.username AS user_username, 
+					b.title AS book_title, 
+					b.description AS book_description,
+					b.image_url AS book_image_url,
+					b.release_year AS book_release_year,
+					b.price AS book_price,
+					b.total_page AS book_total_page,
+					b.author AS book_author,
+					b.category_id AS category_id,
+					c.name AS category_name
+					FROM ` + tableReview + ` AS r 
+					INNER JOIN ` + tableUser + `AS u on u.id = r.user_id 
+					INNER JOIN ` + tableBook + ` AS b on b.id = r.book_id 
+					INNER JOIN ` + tableCategory + ` AS c on c.id = b.category_id `
 
 	rows, err := db.Query(sql)
 
@@ -17,8 +32,11 @@ func GetReviews(db *sql.DB) (results []structs.Review, err error) {
 	}
 
 	for rows.Next() {
-		var review = structs.Review{}
-		err = rows.Scan(&review.Id, &review.UserId, &review.BookId, &review.Description, &review.Stars, &review.CreatedAt, &review.UpdatedAt)
+		var review = structs.ReviewWithUserWithBookWithCategory{}
+		err = rows.Scan(&review.Id, &review.UserId, &review.BookId, &review.Description, &review.Stars, &review.CreatedAt, &review.UpdatedAt,
+			&review.UserUsername,
+			&review.BookTitle, &review.BookDescription, &review.BookImageUrl, &review.BookReleaseYear, &review.BookPrice, &review.BookTotalPage, &review.BookAuthor,
+			&review.CategoryId, &review.CategoryName)
 		if err != nil {
 			break
 		}
@@ -28,8 +46,24 @@ func GetReviews(db *sql.DB) (results []structs.Review, err error) {
 	return
 }
 
-func GetReview(db *sql.DB, review structs.Review) (results []structs.Review, err error) {
-	sql := "SELECT * FROM " + tableReview + " WHERE id = $1"
+func GetReview(db *sql.DB, review structs.Review) (results []structs.ReviewWithUserWithBookWithCategory, err error) {
+	sql := `SELECT 
+					r.*, 
+					u.username AS user_username, 
+					b.title AS book_title, 
+					b.description AS book_description,
+					b.image_url AS book_image_url,
+					b.release_year AS book_release_year,
+					b.price AS book_price,
+					b.total_page AS book_total_page,
+					b.author AS book_author,
+					b.category_id AS category_id,
+					c.name AS category_name
+					FROM ` + tableReview + ` AS r 
+					INNER JOIN ` + tableUser + `AS u on u.id = r.user_id 
+					INNER JOIN ` + tableBook + ` AS b on b.id = r.book_id 
+					INNER JOIN ` + tableCategory + ` AS c on c.id = b.category_id 
+					WHERE r.id = $1`
 
 	rows, err := db.Query(sql, review.Id)
 
@@ -38,8 +72,11 @@ func GetReview(db *sql.DB, review structs.Review) (results []structs.Review, err
 	}
 
 	for rows.Next() {
-		var review = structs.Review{}
-		err = rows.Scan(&review.Id, &review.UserId, &review.BookId, &review.Description, &review.Stars, &review.CreatedAt, &review.UpdatedAt)
+		var review = structs.ReviewWithUserWithBookWithCategory{}
+		err = rows.Scan(&review.Id, &review.UserId, &review.BookId, &review.Description, &review.Stars, &review.CreatedAt, &review.UpdatedAt,
+			&review.UserUsername,
+			&review.BookTitle, &review.BookDescription, &review.BookImageUrl, &review.BookReleaseYear, &review.BookPrice, &review.BookTotalPage, &review.BookAuthor,
+			&review.CategoryId, &review.CategoryName)
 		if err != nil {
 			break
 		}
@@ -52,7 +89,7 @@ func GetReview(db *sql.DB, review structs.Review) (results []structs.Review, err
 func InsertReview(db *sql.DB, review structs.Review) (err error) {
 	sql := `
 		INSERT INTO ` + tableReview + ` (user_id, book_id, description, stars, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
 	_, err = db.Exec(sql, review.UserId, review.BookId, review.Description, review.Stars, review.CreatedAt, review.UpdatedAt)

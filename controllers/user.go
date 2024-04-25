@@ -106,6 +106,13 @@ func UpdateUser(c *gin.Context) {
 		panic(err)
 	}
 
+	if user.Username != "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"result": "Username cannot be updated, please remove it from request body",
+		})
+		return
+	}
+
 	requestValirationError := validateUserRequest(&user)
 	if requestValirationError != nil || len(requestValirationError) != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
